@@ -1,0 +1,15 @@
+#container {
+    border: 5px solid green;
+    position: relative;
+    width: 500px;
+    height: 500px;
+
+}
+
+.tile {
+    border: 1px solid blue;
+    transition: all 1s;
+    background-image: url("tilitoli.jpg");
+    background-repeat: no-repeat;
+    background-size: 500px 500px;
+}

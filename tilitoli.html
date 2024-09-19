@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="container">
+
+    </div>
+    <script>
+        function createMatrix(width, height)
+        {
+            let matrix = [];
+            let id = 1;
+            for (let i = 0; i < width; i++)
+            {
+                matrix.push([])
+                for (let j = 0; j < height; j++)
+                {
+                    matrix[i].push(id);
+                    id++;
+                }
+            }
+            matrix[width-1][height-1] = 0; // itt az üres
+            return matrix;
+        }
+        
+
+        function updateMatrix(event)
+        {
+            let container = document.getElementById("container");
+            let tile = event.target;
+            let idParts = tile.id.split("-");
+            let id = parseInt(idParts[idParts.length - 1]);
+            let x;
+            let y;
+            for (let i = 0; i < matrix.length; i++)
+            {
+                for (let j = 0; j < matrix[i].length; j++)
+                {
+                    if (matrix[i][j] == id)
+                    {
+                        y = i;
+                        x = j;
+                    }
+                }
+            }
+            let move = checkMove(matrix, y, x);
+
+            if (move[0] == -1) return;
+            matrix[move[0]][move[1]] = matrix[y][x];
+            matrix[y][x] = 0;
+
+            let directionY = move[0] - y;
+            let directionX = move[1] - x;
+
+            let w = parseInt(tile.style.width.replace("px","")) + 2;
+            let oldX = parseInt(tile.style.left.replace("px",""));
+            let newX = oldX + w * directionX;
+
+            let h = parseInt(tile.style.height.replace("px","")) + 2;
+            let oldY = parseInt(tile.style.top.replace("px",""));
+            let newY = oldY + h * directionY;
+
+            tile.style.left = `${newX}px`;
+            tile.style.top = `${newY}px`;
+
+            container.style.borderColor = checkValid(matrix) ? "green" : "red";
+        }
+
+        function initMatrix(matrix)
+        {
+            let container = document.getElementById("container");
+            let tileWidth = container.clientWidth / matrix.length;
+            let tileHeight = container.clientHeight / matrix[0].length;
+            for (let i = 0; i < matrix.length; i++)
+            {
+                for (let j = 0; j < matrix[i].length; j++)
+                {
+                    if (matrix[i][j] == 0) return;
+                    tile = document.createElement("div");
+                    tile.id = `tile-${i}-${j}-${matrix[i][j]}`;
+                    tile.classList.add("tile");
+                    tile.style.position = "absolute";
+                    tile.style.width = `${tileWidth-2}px`;
+                    tile.style.height = `${tileHeight-2}px`;
+                    tile.style.left = `${(tileWidth)*j}px`;
+                    tile.style.top = `${(tileHeight)*i}px`;
+                    tile.style.backgroundPosition = `${Math.round(j/(matrix[i].length - 1) * 100)}% ${Math.round(i/(matrix.length-1) * 100)}% `;
+                    console.log(tile.style.backgroundPosition )
+                    tile.addEventListener("click", updateMatrix, false);
+                    container.appendChild(tile);
+                }
+            }
+        }
+
+
+        function checkMove(matrix, i, j) {
+            if (i != 0)
+            {
+                if (matrix[i-1][j] == 0) return [i-1,j]; // felette
+            }
+            if (j != 0)
+            {
+                if (matrix[i][j-1] == 0) return [i,j-1]; // balra
+            }
+            if (i != matrix.length - 1)
+            {
+                if (matrix[i+1][j] == 0) return [i+1, j]; // alatta
+            }
+            if (j != matrix[i].length -1)
+            {
+                if (matrix[i][j+1] == 0) return [i, j+1]; // jobbra
+            }
+            return [-1,-1];
+        }
+
+        function checkValid(matrix)
+        {
+            let id = 1;
+            for (let i = 0; i < matrix.length; i++){
+                for (let j = 0; j < matrix[i].length; j++)
+                {
+                    if (matrix[i][j] != id && matrix[i][j] != 0) return false;
+                    id++;
+                }
+            }
+            return true;
+        }
+
+        let matrix = createMatrix(4,4);
+        initMatrix(matrix);
+        
+    </script>
+</body>
+
+</html>
